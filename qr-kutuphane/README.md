@@ -2,7 +2,45 @@
 
 Kütüphanelerde kitapların QR kodlu arşiv etiketleri için web uygulaması.
 
-## Kurulum ve Kullanım
+## 📋 Proje Bilgileri
+
+Bu proje bir **Sosyal Sorumluluk Projesi** olarak geliştirilmiştir.
+
+- **Yürütücü:** Miray Tiryaki
+- **Danışman Hoca:** Arş. Gör. Ayça Akkan ÇAVDAR
+
+## 🌐 GitHub Pages ile Canlı Kullanım
+
+Bu proje GitHub Pages üzerinden canlı olarak kullanılabilir! 
+
+### GitHub Pages Kurulumu
+
+1. **Repository Ayarları:**
+   - GitHub repository'nize gidin
+   - **Settings** → **Pages** bölümüne gidin
+   - **Source** kısmından **Deploy from a branch** seçin
+   - **Branch** olarak `main` (veya `master`) seçin
+   - **Folder** olarak `/qr-kutuphane` seçin (veya root klasörü seçin)
+   - **Save** butonuna tıklayın
+
+2. **Deploy Süresi:**
+   - İlk deploy genellikle 1-2 dakika sürer
+   - Sonraki güncellemeler birkaç saniye içinde yayınlanır
+   - Site URL'niz: `https://[kullanici-adi].github.io/[repo-adi]/qr-kutuphane/`
+
+3. **QR Kodlar:**
+   - GitHub Pages'te yayınlandıktan sonra, QR kodlar otomatik olarak doğru URL'yi kullanır
+   - Artık herhangi bir internet bağlantısından QR kodları okutabilirsiniz
+   - Local server'a gerek yok! 🎉
+
+### ⚠️ Önemli Notlar
+
+- GitHub Pages **statik dosyalar** için çalışır (HTML, CSS, JS)
+- `server.py` dosyası GitHub Pages'te çalışmaz (sadece local development için)
+- QR kodlar GitHub Pages URL'nizi otomatik kullanır
+- Mobil cihazlarda internet bağlantısı olan her yerden erişilebilir
+
+## Kurulum ve Kullanım (Local Development)
 
 ### 1. Web Sunucusu Olmadan (Sadece Bilgisayarda Test)
 
@@ -89,9 +127,38 @@ Farklı internet ağlarından QR kodlara erişmek için:
 
 - `index.html` - Ana sayfa
 - `kitap.html` - Kitap detay sayfası
-- `server.py` - Python web sunucusu
+- `server.py` - Python web sunucusu (sadece local development için)
 - `BASLAT.bat` - Windows için başlatma scripti
 - `NGROK-BASLAT.bat` - Ngrok başlatma scripti
 - `NGROK-ADIM-ADIM.md` - Ngrok kurulum kılavuzu
 - `HIZLI-BASLANGIC.md` - Hızlı başlangıç kılavuzu
+
+## 📦 Proje Yapısı
+
+```
+qr-kutuphane/
+├── index.html          # Ana sayfa
+├── kitap.html          # Kitap detay sayfası
+├── kitaplar.html       # Kitaplar listesi
+├── hakkinda.html       # Hakkında sayfası
+├── sss.html            # Sık Sorulan Sorular
+├── iletisim.html       # İletişim sayfası
+├── css/
+│   └── styles.css      # Stil dosyası
+├── js/
+│   └── main.js         # Ana JavaScript dosyası
+├── images/             # Kitap görselleri
+└── server.py           # Local development sunucusu
+```
+
+## 🔧 Teknik Detaylar
+
+- **Frontend:** Vanilla JavaScript, HTML5, CSS3
+- **QR Kod Kütüphanesi:** [qrcode.js](https://github.com/davidshimjs/qrcodejs)
+- **Local Server:** Python HTTP Server (development için)
+- **Deployment:** GitHub Pages (production için)
+
+## 📝 Lisans
+
+Bu proje açık kaynak kodludur ve özgürce kullanılabilir.
 

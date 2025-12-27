@@ -112,7 +112,7 @@
     <header class="site-header">
         <div class="header-container">
             <a href="index.html" class="logo">
-                <span class="logo-icon">📚</span>
+                <img src="images/logo.png" alt="QR Kütüphane Logo" class="logo-icon">
                 <span>QR Kütüphane</span>
             </a>
             <button class="menu-toggle" aria-label="Menü">☰</button>
@@ -184,9 +184,10 @@
             </div>
             <div class="footer-section">
                 <h3>İletişim</h3>
-                <p>Kütüphane Yönetimi</p>
-                <p>E-posta: kutuphane@ornek.edu.tr</p>
-                <p>Telefon: (0212) 123 45 67</p>
+                <p>Recep Tayyip Erdoğan Üniversitesi</p>
+                <p>Kütüphane ve Dokümantasyon Daire Başkanlığı</p>
+                <p>Zihni Derin Yerleşkesi, Fener Mahallesi</p>
+                <p>53100 Merkez/RİZE</p>
             </div>
         </div>
         <div class="footer-bottom">
@@ -335,7 +336,7 @@
             updateResultsInfo();
         }
         
-        // Kitapları göster
+        // Kitapları göster - Modern Dikey Kart Tasarımı
         function displayBooks(books) {
             const grid = document.getElementById('booksGrid');
             const noResults = document.getElementById('noResults');
@@ -358,24 +359,34 @@
                 card.className = 'book-card';
                 card.onclick = () => window.location.href = `kitap.html?id=${kitap.id}`;
                 
+                // Görsel HTML - 3:4 oranlı dikey kart
                 let resimHTML;
                 if (kitap.resim) {
-                    resimHTML = `<img src="${kitap.resim}" alt="${kitap.baslik}" class="book-card-image" loading="lazy" onerror="this.onerror=null; this.style.display='none'; const fallback = this.nextElementSibling; if(fallback) fallback.style.display='flex';">
-                                 <div class="book-card-image" style="background: linear-gradient(135deg, #93c5fd 0%, #60a5fa 100%); display: none; align-items: center; justify-content: center; color: #3b82f6; font-size: 3em;">📚</div>`;
+                    resimHTML = `
+                    <div class="book-card-image-wrapper">
+                        <img src="${kitap.resim}" alt="${kitap.baslik}" class="book-card-image" loading="lazy" onerror="this.onerror=null; this.style.display='none'; const fallback = this.nextElementSibling; if(fallback) fallback.style.display='flex';">
+                        <div class="book-card-image-fallback" style="display: none;">📚</div>
+                    </div>`;
                 } else {
-                    resimHTML = `<div class="book-card-image" style="background: linear-gradient(135deg, #93c5fd 0%, #60a5fa 100%); display: flex; align-items: center; justify-content: center; color: #3b82f6; font-size: 3em;">📚</div>`;
+                    resimHTML = `
+                    <div class="book-card-image-wrapper">
+                        <div class="book-card-image-fallback">📚</div>
+                    </div>`;
                 }
                 
+                // Kart içeriği
                 card.innerHTML = `
                     ${resimHTML}
-                    <h3>${kitap.baslik}</h3>
-                    <div class="author">${kitap.yazar}</div>
-                    <div class="category">${kitap.altTur}</div>
-                    <div class="info-box" style="margin-top: 15px;">
-                        <p><strong>Demirbaş:</strong> ${kitap.demirbas}</p>
-                        <p><strong>Durum:</strong> ${kitap.durum}</p>
+                    <div class="book-card-content">
+                        <h3>${kitap.baslik}</h3>
+                        <div class="author">${kitap.yazar}</div>
+                        <div class="category">${kitap.altTur}</div>
+                        <div class="info-box">
+                            <p><strong>Demirbaş:</strong> ${kitap.demirbas}</p>
+                            <p><strong>Durum:</strong> ${kitap.durum}</p>
+                        </div>
+                        <button class="qr-btn" onclick="event.stopPropagation(); showQRCode('${kitap.id}', '${kitap.baslik}', '${kitap.demirbas}')">QR Kod Oluştur & Yazdır</button>
                     </div>
-                    <button class="qr-btn" onclick="event.stopPropagation(); showQRCode('${kitap.id}', '${kitap.baslik}', '${kitap.demirbas}')">QR Kod Oluştur & Yazdır</button>
                 `;
                 
                 grid.appendChild(card);

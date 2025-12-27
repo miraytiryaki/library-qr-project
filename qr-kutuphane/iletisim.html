@@ -58,10 +58,14 @@
         }
         
         .contact-info {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
+            display: flex;
+            justify-content: center;
             margin-top: 40px;
+        }
+        
+        .contact-info .contact-card {
+            max-width: 500px;
+            width: 100%;
         }
         
         .contact-card {
@@ -99,7 +103,7 @@
     <header class="site-header">
         <div class="header-container">
             <a href="index.html" class="logo">
-                <span class="logo-icon">📚</span>
+                <img src="images/logo.png" alt="QR Kütüphane Logo" class="logo-icon">
                 <span>QR Kütüphane</span>
             </a>
             <button class="menu-toggle" aria-label="Menü">☰</button>
@@ -150,21 +154,16 @@
             <!-- İletişim Bilgileri -->
             <div class="contact-info">
                 <div class="contact-card">
-                    <div class="contact-card-icon">📧</div>
-                    <h3>E-posta</h3>
-                    <p>kutuphane@ornek.edu.tr</p>
-                    <p style="margin-top: 10px; font-size: 0.9em; color: #94a3b8;">E-posta göndermek için yukarıdaki formu kullanabilirsiniz.</p>
-                </div>
-                <div class="contact-card">
-                    <div class="contact-card-icon">📞</div>
-                    <h3>Telefon</h3>
-                    <p>(0212) 123 45 67</p>
-                    <p style="margin-top: 10px; font-size: 0.9em; color: #94a3b8;">Çalışma saatleri: Pazartesi - Cuma, 09:00 - 17:00</p>
-                </div>
-                <div class="contact-card">
                     <div class="contact-card-icon">📍</div>
                     <h3>Adres</h3>
-                    <p>Kütüphane Binası<br>Üniversite Kampüsü<br>İstanbul, Türkiye</p>
+                    <p>
+                        Recep Tayyip Erdoğan Üniversitesi<br>
+                        Kütüphane ve Dokümantasyon Daire Başkanlığı<br>
+                        Zihni Derin Yerleşkesi<br>
+                        Fener Mahallesi<br>
+                        53100 Merkez/RİZE<br>
+                        Türkiye
+                    </p>
                 </div>
             </div>
         </section>
@@ -189,9 +188,10 @@
             </div>
             <div class="footer-section">
                 <h3>İletişim</h3>
-                <p>Kütüphane Yönetimi</p>
-                <p>E-posta: kutuphane@ornek.edu.tr</p>
-                <p>Telefon: (0212) 123 45 67</p>
+                <p>Recep Tayyip Erdoğan Üniversitesi</p>
+                <p>Kütüphane ve Dokümantasyon Daire Başkanlığı</p>
+                <p>Zihni Derin Yerleşkesi, Fener Mahallesi</p>
+                <p>53100 Merkez/RİZE</p>
             </div>
         </div>
         <div class="footer-bottom">

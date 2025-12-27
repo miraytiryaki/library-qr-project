@@ -389,24 +389,34 @@ function showBooksByCategory(kategori) {
         card.className = 'book-card';
         card.onclick = () => window.location.href = `kitap.html?id=${kitap.id}`;
         
+        // Görsel HTML - 3:4 oranlı dikey kart
         let resimHTML;
         if (kitap.resim) {
-            resimHTML = `<img src="${kitap.resim}" alt="${kitap.baslik}" class="book-card-image" loading="lazy" onerror="this.onerror=null; this.style.display='none'; const fallback = this.nextElementSibling; if(fallback) fallback.style.display='flex';">
-                         <div class="book-card-image" style="background: linear-gradient(135deg, #93c5fd 0%, #60a5fa 100%); display: none; align-items: center; justify-content: center; color: #3b82f6; font-size: 3em;">📚</div>`;
+            resimHTML = `
+            <div class="book-card-image-wrapper">
+                <img src="${kitap.resim}" alt="${kitap.baslik}" class="book-card-image" loading="lazy" onerror="this.onerror=null; this.style.display='none'; const fallback = this.nextElementSibling; if(fallback) fallback.style.display='flex';">
+                <div class="book-card-image-fallback" style="display: none;">📚</div>
+            </div>`;
         } else {
-            resimHTML = `<div class="book-card-image" style="background: linear-gradient(135deg, #93c5fd 0%, #60a5fa 100%); display: flex; align-items: center; justify-content: center; color: #3b82f6; font-size: 3em;">📚</div>`;
+            resimHTML = `
+            <div class="book-card-image-wrapper">
+                <div class="book-card-image-fallback">📚</div>
+            </div>`;
         }
         
+        // Kart içeriği
         card.innerHTML = `
             ${resimHTML}
-            <h3>${kitap.baslik}</h3>
-            <div class="author">${kitap.yazar}</div>
-            <div class="category">${kitap.altTur}</div>
-            <div class="info-box" style="margin-top: 15px;">
-                <p><strong>Demirbaş:</strong> ${kitap.demirbas}</p>
-                <p><strong>Durum:</strong> ${kitap.durum}</p>
+            <div class="book-card-content">
+                <h3>${kitap.baslik}</h3>
+                <div class="author">${kitap.yazar}</div>
+                <div class="category">${kitap.altTur}</div>
+                <div class="info-box">
+                    <p><strong>Demirbaş:</strong> ${kitap.demirbas}</p>
+                    <p><strong>Durum:</strong> ${kitap.durum}</p>
+                </div>
+                <button class="qr-btn" onclick="event.stopPropagation(); showQRCode('${kitap.id}', '${kitap.baslik}', '${kitap.demirbas}')">QR Kod Oluştur & Yazdır</button>
             </div>
-            <button class="qr-btn" onclick="event.stopPropagation(); showQRCode('${kitap.id}', '${kitap.baslik}', '${kitap.demirbas}')">QR Kod Oluştur & Yazdır</button>
         `;
         
         grid.appendChild(card);
@@ -619,7 +629,57 @@ document.addEventListener('DOMContentLoaded', function() {
     if (menuToggle && navMenu) {
         menuToggle.addEventListener('click', function() {
             navMenu.classList.toggle('active');
+            // Hamburger ikonunu değiştir (opsiyonel)
+            if (navMenu.classList.contains('active')) {
+                menuToggle.textContent = '✕';
+            } else {
+                menuToggle.textContent = '☰';
+            }
+        });
+        
+        // Menü dışına tıklandığında kapat
+        document.addEventListener('click', function(e) {
+            if (!navMenu.contains(e.target) && !menuToggle.contains(e.target)) {
+                navMenu.classList.remove('active');
+                menuToggle.textContent = '☰';
+            }
         });
     }
 });
+
+// ========== Navbar Scroll Detection - Compact Mode ==========
+(function() {
+    const header = document.querySelector('.site-header');
+    if (!header) return;
+    
+    let lastScroll = 0;
+    const scrollThreshold = 50; // 50px scroll sonrası compact mode
+    
+    function handleScroll() {
+        const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+        
+        if (currentScroll > scrollThreshold) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+        
+        lastScroll = currentScroll;
+    }
+    
+    // Throttle scroll event for performance
+    let ticking = false;
+    window.addEventListener('scroll', function() {
+        if (!ticking) {
+            window.requestAnimationFrame(function() {
+                handleScroll();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    });
+    
+    // Initial check
+    handleScroll();
+})();
 

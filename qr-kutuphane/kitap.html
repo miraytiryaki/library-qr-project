@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitap Bilgisi - Kütüphane QR Kod Sistemi</title>
+    <!-- QR kod kütüphanesi - alternatif CDN'ler -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js" 
+            onerror="loadAlternativeQRCode()"></script>
+    <script>
+        // Alternatif QR kod kütüphanesi yükleme
+        function loadAlternativeQRCode() {
+            console.log('Ana CDN yüklenemedi, alternatif deneniyor...');
+            const script = document.createElement('script');
+            script.src = 'https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js';
+            script.onerror = function() {
+                console.log('Alternatif CDN de yüklenemedi, API kullanılacak');
+                window.useQRCodeAPI = true;
+            };
+            script.onload = function() {
+                console.log('Alternatif CDN yüklendi');
+                window.useQRCodeAPI = false;
+            };
+            document.head.appendChild(script);
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 50%, #cbd5e1 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 15s ease infinite;
+            padding: 20px;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255,255,255,0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .back-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-bottom: 25px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+            font-family: 'Poppins', sans-serif;
+            animation: fadeInDown 0.6s ease;
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .back-btn:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 25px;
+            border: 1px solid rgba(255,255,255,0.3);
+            animation: fadeInUp 0.8s ease;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .header-section {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border-radius: 20px;
+            padding: 40px 50px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(59, 130, 246, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .book-icon {
+            font-size: 5em;
+            margin-right: 30px;
+            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.2));
+            animation: float 3s ease-in-out infinite;
+            opacity: 0.95;
+        }
+        
+        .book-image {
+            width: 180px;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-right: 30px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            flex-shrink: 0;
+            animation: bookImageFloat 3s ease-in-out infinite;
+        }
+        
+        @keyframes bookImageFloat {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-12px);
+            }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(2deg); }
+        }
+        
+        .book-title-section {
+            flex: 1;
+            color: white;
+        }
+        
+        .book-title-section .category {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 10px 22px;
+            border-radius: 30px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        
+        .book-title-section h1 {
+            color: white;
+            font-size: 2.8em;
+            margin-bottom: 18px;
+            font-weight: 800;
+            line-height: 1.15;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            letter-spacing: -0.5px;
+        }
+        
+        .book-title-section .author {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.35em;
+            margin-bottom: 12px;
+            font-weight: 600;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .book-title-section .publication {
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 8px;
+            font-size: 1em;
+            font-weight: 400;
+            line-height: 1.5;
+        }
+        
+        .book-title-section .pages {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 1em;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+        
+        .qr-code-placeholder {
+            width: 120px;
+            height: 120px;
+            background: #f0f0f0;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+            color: #999;
+            text-align: center;
+            padding: 10px;
+        }
+        
+        .qr-code-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+        
+        #qrcode {
+            background: white;
+            padding: 12px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        
+        .qr-generate-btn {
+            background: rgba(255, 255, 255, 0.95);
+            color: #3b82f6;
+            padding: 12px 24px;
+            border: 2px solid rgba(255,255,255,0.5);
+            border-radius: 12px;
+            font-size: 0.9em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .qr-generate-btn:hover {
+            background: white;
+            color: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0,0,0,0.3);
+        }
+        
+        .qr-print-btn {
+            background: rgba(255, 255, 255, 0.95);
+            color: #28a745;
+            padding: 12px 24px;
+            border: 2px solid rgba(255,255,255,0.5);
+            border-radius: 12px;
+            font-size: 0.9em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .qr-print-btn:hover {
+            background: white;
+            color: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0,0,0,0.3);
+        }
+        
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .qr-print-page, .qr-print-page * {
+                visibility: visible;
+            }
+            .qr-print-page {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+        
+        .qr-print-page {
+            display: none;
+            text-align: center;
+            padding: 60px 40px;
+            background: white;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .qr-print-page h2 {
+            margin-bottom: 30px;
+            color: #333;
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+        
+        .qr-print-page .book-info {
+            margin-top: 30px;
+            font-size: 1em;
+            color: #333;
+            line-height: 1.8;
+        }
+        
+        .qr-print-page .book-info p {
+            margin: 10px 0;
+        }
+        
+        .qr-print-page .book-info strong {
+            color: #3b82f6;
+            font-size: 1.1em;
+        }
+        
+        .qr-print-page #printQrcode {
+            margin: 30px auto;
+            padding: 20px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            display: inline-block;
+        }
+        
+        .qr-print-page #printQrcode img {
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .library-info {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 30px;
+            border-radius: 16px;
+            margin-top: 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        
+        .library-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin-top: 20px;
+        }
+        
+        .info-item {
+            padding: 18px;
+            background: white;
+            border-radius: 12px;
+            border-left: 4px solid #3b82f6;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            transition: all 0.3s ease;
+        }
+        
+        .info-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(59, 130, 246, 0.2);
+        }
+        
+        .info-item label {
+            display: block;
+            color: #666;
+            font-size: 0.85em;
+            margin-bottom: 8px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .info-item .value {
+            color: #333;
+            font-weight: 600;
+            font-size: 1.05em;
+        }
+        
+        .info-item .value.highlight {
+            color: #3b82f6;
+            font-weight: 700;
+            font-size: 1.15em;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 0.9em;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .status-rafta {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+        }
+        
+        .status-iade {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            color: #856404;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #5a6268 0%, #495057 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+        }
+        
+        .details-section {
+            margin-top: 30px;
+        }
+        
+        .details-tab {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 18px 28px;
+            border-radius: 12px 12px 0 0;
+            border-bottom: 4px solid #3b82f6;
+            display: inline-block;
+            color: #333;
+            font-weight: 600;
+            font-size: 1.1em;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .details-content {
+            background: white;
+            padding: 30px;
+            border-radius: 0 12px 12px 12px;
+            margin-top: -1px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        
+        .details-table {
+            width: 100%;
+        }
+        
+        .details-table tr {
+            border-bottom: 1px solid #e8e8e8;
+            transition: background 0.2s ease;
+        }
+        
+        .details-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .details-table td {
+            padding: 16px 0;
+            vertical-align: top;
+        }
+        
+        .details-table td:first-child {
+            width: 220px;
+            color: #666;
+            font-weight: 600;
+            font-size: 0.95em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .details-table td:last-child {
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .details-table a {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        
+        .details-table a:hover {
+            color: #2563eb;
+            text-decoration: underline;
+        }
+        
+        .not-found {
+            text-align: center;
+            padding: 80px 20px;
+        }
+        
+        .not-found h2 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 2em;
+            font-weight: 600;
+        }
+        
+        .not-found p {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .card {
+                padding: 25px;
+                border-radius: 16px;
+            }
+            
+            .header-section {
+                padding: 30px 25px;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .book-icon {
+                margin-right: 0;
+                margin-bottom: 20px;
+                font-size: 4em;
+            }
+            
+            .book-image {
+                width: 120px;
+                height: 170px;
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+            
+            .book-title-section h1 {
+                font-size: 2em;
+            }
+            
+            .book-title-section .author {
+                font-size: 1.15em;
+            }
+            
+            .qr-code-container {
+                margin-top: 25px;
+                width: 100%;
+                max-width: 280px;
+            }
+            
+            .qr-code-placeholder {
+                margin-top: 20px;
+                align-self: center;
+            }
+            
+            .library-info {
+                padding: 20px;
+            }
+            
+            .library-info-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .details-content {
+                padding: 20px;
+            }
+            
+            .details-table td:first-child {
+                width: auto;
+                display: block;
+                margin-bottom: 5px;
+            }
+            
+            .details-table td:last-child {
+                display: block;
+                padding-top: 0;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .action-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">← Ana Sayfaya Dön</a>
+        
+        <div id="bookContent">
+            <!-- Kitap içeriği JavaScript ile doldurulacak -->
+        </div>
+        
+        <div id="notFound" class="card not-found" style="display: none;">
+            <h2>Kitap Bulunamadı</h2>
+            <p>Üzgünüz, aradığınız kitap bulunamadı.</p>
+            <a href="index.html" class="back-btn" style="margin-top: 20px;">Ana Sayfaya Dön</a>
+        </div>
+        
+        <!-- Yazdırma için gizli sayfa -->
+        <div class="qr-print-page" id="qrPrintPage">
+            <h2>Kütüphane QR Kod Etiketi</h2>
+            <div id="printQrcode"></div>
+            <div class="book-info">
+                <p><strong id="printBookTitle"></strong></p>
+                <p>Demirbaş No: <strong id="printDemirbas"></strong></p>
+                <p style="margin-top: 20px; font-size: 0.85em; color: #999;">QR kodu okutarak kitap bilgilerine erişebilirsiniz.</p>
+            </div>
+    </div>
+</div>
+
+<script>
+const kitaplar = {
+            'kinyas-ve-kayra': {
+                id: 'kinyas-ve-kayra',
+                baslik: 'Kinyas ve Kayra',
+                yazar: 'Hakan Günday',
+                resim: 'images/kinyas-ve-kayra.jpg',
+                yayin: 'İstanbul : Doğan Kitap, 2017',
+                sayfa: '531 sayfa ; 20 cm',
+                kutuphane: 'Merkez Kütüphanesi',
+                bolum: '1. Kat Kitap Salonu',
+                oduncSayisi: 28,
+                tur: 'Kitap',
+                altTur: 'Edebiyat',
+                sekil: 'Basılı',
+                ortam: 'Kağıt',
+                siniflama: 'PL248.G8633 K56 2017',
+                durum: 'Rafta',
+                demirbas: '0085481',
+                kopya: 'k.1'
+            },
+            'bilgisayar-sistemleri-mimarisi': {
+                id: 'bilgisayar-sistemleri-mimarisi',
+                baslik: 'Bilgisayar sistemleri mimarisi',
+                yazar: 'M. Morris Mano',
+                resim: 'images/bilgisayar-sistemleri-mimarisi.jpg',
+                cevirmenler: 'Abdüssamet Marşoğlu, Nurşen Suçsuz',
+                yayin: 'İstanbul : Literatür Yayınları, 2007',
+                sayfa: 'xviii, 494 sayfa : tablolu ; 24 cm.',
+                kutuphane: 'Merkez Kütüphanesi',
+                bolum: '1. Kat Kitap Salonu',
+                oduncSayisi: 13,
+                tur: 'Kitap',
+                altTur: 'Bilgisayar',
+                sekil: 'Basılı',
+                ortam: 'Kağıt',
+                siniflama: 'QA76.9.A73.M36 2007',
+                durum: 'İade',
+                durumTarihi: '23.12.2025',
+                demirbas: '0051086',
+                kopya: 'k.2'
+            },
+            'osmancik': {
+                id: 'osmancik',
+                baslik: 'Osmancık: Cihan devrini kuran irade, şuur ve karakter',
+                yazar: 'Tarık Buğra',
+                resim: 'images/osmancik.jpg',
+                yayin: 'İstanbul: Ötüken, 2004',
+                sayfa: '356 s.',
+                kutuphane: 'Merkez Kütüphanesi',
+                bolum: '1. Kat Kitap Salonu',
+                oduncSayisi: 4,
+                tur: 'Kitap',
+                altTur: 'Roman',
+                sekil: 'Basılı',
+                ortam: 'Kağıt',
+                siniflama: 'PL248.8847 O86 2004',
+                durum: 'Rafta',
+                demirbas: '0000712',
+                kopya: 'k.2',
+                isbn: '975-437-079-6',
+                konu: 'Türk edebiyatı--Romanlar.',
+                dil: 'Türkçe',
+                yayinGelisTarihi: '04.04.2008',
+                diziKaydi: 'Yayın nu: 177; Edebi Eserler, no: 89.'
+            },
+            'roma-hukuku-dersleri': {
+                id: 'roma-hukuku-dersleri',
+                baslik: 'Roma hukuku dersleri',
+                yazar: 'Bülent Tahiroğlu',
+                resim: 'images/roma-hukuku-dersleri.jpg',
+                sorumlular: 'Belgin Erdoğmuş',
+                yayin: 'İstanbul: Der Yayınları, 2013',
+                sayfa: '298 s.; 24 cm.',
+                kutuphane: 'Merkez Kütüphanesi',
+                bolum: '1. Kat Kitap Salonu',
+                oduncSayisi: 21,
+                tur: 'Kitap',
+                altTur: 'Hukuk',
+                sekil: 'Basılı',
+                ortam: 'Kağıt',
+                siniflama: 'KJA1030. T342',
+                durum: 'Rafta',
+                demirbas: '0034240',
+                kopya: 'k.1',
+                isbn: '9789753531887',
+                konu: 'Roma hukuku.',
+                dil: 'Türkçe',
+                notlar: 'Kaynakça ve dizin var.'
+            },
+            'foundations-of-medical-imaging': {
+                id: 'foundations-of-medical-imaging',
+                baslik: 'Foundations of medical imaging',
+                yazar: 'Z. H. (Zang-Hee) Cho, Joie P. Jones, Manbir Singh',
+                resim: 'images/foundations-of-medical-imaging.jpg',
+                yayin: 'New York : Wiley, 1993',
+                sayfa: 'xiii, 586 p. : ill. ; 25 cm.',
+                kutuphane: 'Merkez Kütüphanesi',
+                bolum: '1. Kat Tıp Kitaplığı',
+                oduncSayisi: 1,
+                tur: 'Kitap',
+                altTur: 'Tıp',
+                sekil: 'Basılı',
+                ortam: 'Kağıt',
+                siniflama: 'RC78.7.D53 C48 1993',
+                durum: 'Rafta',
+                demirbas: '0002268',
+                kopya: 'k.1'
+            },
+            'hz-muhammedin-hayati': {
+                id: 'hz-muhammedin-hayati',
+                baslik: 'Hz. Muhammed\'in hayatı',
+                yazar: 'Casim Avcı',
+                resim: 'images/hz-muhammedin-hayati.jpg',
+                sorumlular: 'Casim Avcı, Mevlana İdris; editör Ali Erbaş, Ulviye Özkan',
+                yayin: 'Ankara: Diyanet İşleri Başkanlığı Yayınları, 2021',
+                sayfa: '217 s.; 24 cm.',
+                kutuphane: 'İlahiyat Fakültesi Kütüphanesi',
+                bolum: 'KİTAP',
+                oduncSayisi: 0,
+                tur: 'Kitap',
+                altTur: 'Din',
+                sekil: 'Basılı',
+                ortam: 'Kağıt',
+                siniflama: '297.92 AVC.M 2021',
+                durum: 'Rafta',
+                demirbas: 'D0032334',
+                kopya: 'k.1',
+                isbn: '9789751966278',
+                konu: 'Muhammed, Hz. Biyografya, Siyer-i Nebevi',
+                dil: 'Türkçe',
+                diziKaydi: 'Diyanet İşleri Başkanlığı Yayınları; 1286. Çocuk Kitapları; 302.',
+                baskı: '2. baskı'
+            }
+};
+
+// URL'den id parametresini al
+        const urlParams = new URLSearchParams(window.location.search);
+        const bookId = urlParams.get('id');
+        
+        function displayBook(kitap) {
+            const content = document.getElementById('bookContent');
+            
+            const statusClass = kitap.durum === 'Rafta' ? 'status-rafta' : 'status-iade';
+            const statusText = kitap.durum === 'Rafta' ? 'Rafta' : `İade (${kitap.durumTarihi || ''})`;
+            
+            let authorLine = `<div class="author">${kitap.baslik} / ${kitap.yazar}</div>`;
+            if (kitap.cevirmenler) {
+                authorLine += `<div class="publication">çevirenler, ${kitap.cevirmenler}</div>`;
+            }
+            if (kitap.sorumlular) {
+                authorLine += `<div class="publication">${kitap.sorumlular}</div>`;
+            }
+            
+            let detailsRows = `
+                <tr>
+                    <td>Eser Adı</td>
+                    <td>${kitap.baslik}</td>
+                </tr>
+                <tr>
+                    <td>Yazar</td>
+                    <td><a href="#">${kitap.yazar}</a></td>
+                </tr>
+            `;
+            
+            if (kitap.sorumlular) {
+                detailsRows += `
+                    <tr>
+                        <td>Sorumlular</td>
+                        <td>${kitap.sorumlular}</td>
+                    </tr>
+                `;
+            }
+            
+            if (kitap.cevirmenler) {
+                detailsRows += `
+                    <tr>
+                        <td>Sorumlular</td>
+                        <td>çevirenler, ${kitap.cevirmenler}</td>
+                    </tr>
+                `;
+            }
+            
+            const yayinBilgisi = kitap.yayin.split(':');
+            const yayinYeri = yayinBilgisi[0];
+            const yayinDetay = yayinBilgisi[1] ? yayinBilgisi[1].split(',') : [];
+            const yayinlayan = yayinDetay[0] ? yayinDetay[0].trim() : '';
+            const yayinTarihi = yayinDetay[1] ? yayinDetay[1].trim() : '';
+            
+            detailsRows += `
+                <tr>
+                    <td>Yayın Tarihi</td>
+                    <td>${yayinTarihi || ''}</td>
+                </tr>
+                <tr>
+                    <td>Yayınlayan</td>
+                    <td><a href="#">${yayinlayan}</a></td>
+                </tr>
+                <tr>
+                    <td>Yayın Yeri</td>
+                    <td><a href="#">${yayinYeri}</a></td>
+                </tr>
+            `;
+            
+            if (kitap.konu) {
+                detailsRows += `
+                    <tr>
+                        <td>Konu</td>
+                        <td>${kitap.konu}</td>
+                    </tr>
+                `;
+            }
+            
+            if (kitap.diziKaydi) {
+                detailsRows += `
+                    <tr>
+                        <td>Dizi Kaydı</td>
+                        <td>${kitap.diziKaydi}</td>
+                    </tr>
+                `;
+            }
+            
+            if (kitap.dil) {
+                detailsRows += `
+                    <tr>
+                        <td>Dil</td>
+                        <td>${kitap.dil}</td>
+                    </tr>
+                `;
+            }
+            
+            if (kitap.isbn) {
+                detailsRows += `
+                    <tr>
+                        <td>ISBN</td>
+                        <td>${kitap.isbn}</td>
+                    </tr>
+                `;
+            }
+            
+            if (kitap.notlar) {
+                detailsRows += `
+                    <tr>
+                        <td>Notlar</td>
+                        <td>${kitap.notlar}</td>
+                    </tr>
+                `;
+            }
+            
+            detailsRows += `
+                <tr>
+                    <td>Fiziksel Nitelik</td>
+                    <td>${kitap.sayfa}</td>
+                </tr>
+            `;
+            
+            content.innerHTML = `
+                <div class="card" style="padding: 0; background: transparent; box-shadow: none; border: none;">
+                    <div class="header-section">
+                        <div class="header-content">
+                            <div style="display: flex; align-items: flex-start;">
+                                ${kitap.resim ? 
+                                    `<img src="${kitap.resim}" alt="${kitap.baslik}" class="book-image" loading="lazy" onerror="this.onerror=null; this.style.display='none'; const fallback = this.nextElementSibling; if(fallback) fallback.style.display='block';">
+                                     <div class="book-icon" style="display: none;">📖</div>` : 
+                                    `<div class="book-icon">📖</div>`
+                                }
+                                <div class="book-title-section">
+                                    <span class="category">Kitap [${kitap.altTur}]</span>
+                                    <h1>${kitap.baslik}</h1>
+                                    ${authorLine}
+                                    <div class="publication">${kitap.yayin}</div>
+                                    <div class="pages">${kitap.sayfa}</div>
+                                </div>
+                            </div>
+                            <div class="qr-code-container">
+                                <div id="qrcode"></div>
+                                <button class="qr-generate-btn" onclick="generateQRCode('${kitap.id}')">QR Kod Oluştur</button>
+                                <button class="qr-print-btn" onclick="printQRCode('${kitap.id}', '${kitap.baslik}', '${kitap.demirbas}')" style="display: none;" id="printBtn">Yazdır</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="library-info">
+                        <div class="library-info-grid">
+                            <div class="info-item">
+                                <label>Kütüphane</label>
+                                <div class="value">${kitap.kutuphane}</div>
+                            </div>
+                            <div class="info-item">
+                                <label>Bölüm</label>
+                                <div class="value">${kitap.bolum}</div>
+                            </div>
+                            <div class="info-item">
+                                <label>Ödünç Sayısı</label>
+                                <div class="value">${kitap.oduncSayisi}</div>
+                            </div>
+                            <div class="info-item">
+                                <label>Tür</label>
+                                <div class="value">${kitap.tur}</div>
+                            </div>
+                            <div class="info-item">
+                                <label>Alt Tür</label>
+                                <div class="value">${kitap.altTur}</div>
+                            </div>
+                            <div class="info-item">
+                                <label>Şekil</label>
+                                <div class="value">${kitap.sekil}</div>
+                            </div>
+                            <div class="info-item">
+                                <label>Ortam</label>
+                                <div class="value">${kitap.ortam}</div>
+                            </div>
+                            <div class="info-item">
+                                <label>Sınıflama yer bilgisi</label>
+                                <div class="value">${kitap.siniflama}</div>
+                            </div>
+                            <div class="info-item">
+                                <label>Durum</label>
+                                <div class="value">
+                                    <span class="status-badge ${statusClass}">${statusText}</span>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <label>Demirbaş</label>
+                                <div class="value highlight">${kitap.demirbas}</div>
+                            </div>
+                            <div class="info-item">
+                                <label>Kopya</label>
+                                <div class="value">${kitap.kopya}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card details-section">
+                    <div class="details-tab">Bilgiler</div>
+                    <div class="details-content">
+                        <table class="details-table">
+                            ${detailsRows}
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Alternatif QR kod oluşturma (API kullanarak)
+        function generateQRCodeWithAPI(qrUrl, container) {
+            // QR kod API'si kullan (fallback) - birden fazla API denenecek
+            const apis = [
+                `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrUrl)}`,
+                `https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=${encodeURIComponent(qrUrl)}`,
+                `https://qr-code-generator.com/api/qr-code?size=200&data=${encodeURIComponent(qrUrl)}`
+            ];
+            
+            let imgIndex = 0;
+            const img = document.createElement('img');
+            img.style.cssText = 'max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 4px;';
+            img.alt = 'QR Kod';
+            
+            img.onerror = function() {
+                imgIndex++;
+                if (imgIndex < apis.length) {
+                    img.src = apis[imgIndex];
+                } else {
+                    container.innerHTML = '<p style="color: red; padding: 10px;">QR kod oluşturulamadı. İnternet bağlantınızı kontrol edin.</p>';
+                }
+            };
+            
+            img.onload = function() {
+                container.innerHTML = '';
+                container.appendChild(img);
+                const printBtn = document.getElementById('printBtn');
+                if (printBtn) {
+                    printBtn.style.display = 'block';
+                }
+            };
+            
+            img.src = apis[0];
+        }
+        
+        // QR kod oluşturma fonksiyonu
+        function generateQRCode(bookId) {
+            // QR kod container'ını temizle
+            const qrContainer = document.getElementById('qrcode');
+            if (!qrContainer) {
+                console.error('QR kod container bulunamadı');
+                return;
+            }
+            qrContainer.innerHTML = '<p style="padding: 10px; color: #666;">QR kod oluşturuluyor...</p>';
+            
+            // QR kod içine tam URL koy (mobil uyumlu)
+            let qrUrl;
+            const currentHost = window.location.hostname;
+            
+            if (window.location.protocol === 'file:') {
+                // File protokolü kullanılıyorsa uyarı ver
+                alert('⚠️ ÖNEMLİ: QR kodun çalışması için web sunucusu kullanmanız gerekiyor!\n\nLütfen BASLAT.bat dosyasını çalıştırarak sunucuyu başlatın.\n\nQR kod sadece web sunucusu ile çalışır.');
+                qrUrl = `index.html?book=${bookId}`;
+            } else if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+                // localhost kullanılıyorsa - mobilde çalışmayacak
+                // IP adresini server'dan almayı dene
+                fetch('/get-ip')
+                    .then(response => response.text())
+                    .then(ip => {
+                        if (ip && ip !== 'BULUNAMADI' && ip.trim() !== '') {
+                            // IP adresi bulundu, onu kullan
+                            qrUrl = `http://${ip.trim()}:8000/index.html?book=${bookId}`;
+                            console.log('QR kod URL (IP ile):', qrUrl);
+                            createQRCodeWithUrl(qrUrl, qrContainer);
+                        } else {
+                            // IP bulunamadı, kullanıcıya uyarı göster
+                            const warning = document.createElement('div');
+                            warning.style.cssText = 'background: #fff3cd; color: #856404; padding: 15px; border-radius: 8px; margin: 15px 0; font-size: 0.9em; line-height: 1.6;';
+                            warning.innerHTML = '⚠️ <strong>Mobil cihazlarda çalışması için:</strong><br>1. Telefonunuzdan IP adresi ile siteyi açın (örn: http://192.168.1.100:8000)<br>2. IP adresinizi öğrenmek için: IP-BUL.bat<br>3. Sonra buradan QR kod oluşturun';
+                            qrContainer.parentNode.insertBefore(warning, qrContainer);
+                            qrUrl = `http://localhost:8000/index.html?book=${bookId}`;
+                            console.log('QR kod URL (localhost - mobilde çalışmaz):', qrUrl);
+                            createQRCodeWithUrl(qrUrl, qrContainer);
+                        }
+                    })
+                    .catch(error => {
+                        console.warn('IP adresi alınamadı:', error);
+                        const warning = document.createElement('div');
+                        warning.style.cssText = 'background: #fff3cd; color: #856404; padding: 15px; border-radius: 8px; margin: 15px 0; font-size: 0.9em; line-height: 1.6;';
+                        warning.innerHTML = '⚠️ <strong>Mobil cihazlarda çalışması için:</strong><br>1. Telefonunuzdan IP adresi ile siteyi açın (örn: http://192.168.1.100:8000)<br>2. IP adresinizi öğrenmek için: IP-BUL.bat<br>3. Sonra buradan QR kod oluşturun';
+                        qrContainer.parentNode.insertBefore(warning, qrContainer);
+                        qrUrl = `http://localhost:8000/index.html?book=${bookId}`;
+                        console.log('QR kod URL (localhost - mobilde çalışmaz):', qrUrl);
+                        createQRCodeWithUrl(qrUrl, qrContainer);
+                    });
+                return; // fetch tamamlanana kadar bekle
+            } else {
+                // IP adresi veya domain zaten kullanılıyor - mükemmel!
+                // window.location.origin zaten port'u içeriyor (örn: http://192.168.1.100:8000)
+                const baseUrl = window.location.origin;
+                // Pathname'den dosya adını çıkar, sadece dizin yolunu al
+                const pathname = window.location.pathname;
+                const directory = pathname.substring(0, pathname.lastIndexOf('/') + 1);
+                qrUrl = `${baseUrl}${directory}index.html?book=${bookId}`;
+                console.log('QR kod URL (tam URL):', qrUrl);
+                
+                // URL'nin geçerli olduğunu kontrol et
+                if (!qrUrl.startsWith('http://') && !qrUrl.startsWith('https://')) {
+                    console.error('Geçersiz URL formatı:', qrUrl);
+                    qrContainer.innerHTML = '<div style="color: red; padding: 15px; background: #ffe6e6; border-radius: 8px; margin: 10px 0;"><strong>❌ HATA:</strong> QR kod URL\'si geçersiz!<br><small>Lütfen web sunucusu kullanarak siteyi açın (BASLAT.bat)</small></div>';
+                    return;
+                }
+            }
+            
+            // QR kod oluşturma fonksiyonunu çağır
+            if (qrUrl) {
+                createQRCodeWithUrl(qrUrl, qrContainer);
+            }
+        }
+        
+        // QR kod oluşturma yardımcı fonksiyonu
+        function createQRCodeWithUrl(qrUrl, qrContainer) {
+            
+            // QR kod kütüphanesinin yüklendiğini kontrol et
+            if (typeof QRCode === 'undefined' || window.useQRCodeAPI) {
+                console.warn('QRCode kütüphanesi yüklenmemiş, alternatif API yöntemi kullanılıyor');
+                generateQRCodeWithAPI(qrUrl, qrContainer);
+                return;
+            }
+            
+            try {
+                
+                // QR kod oluştur (toDataURL ile img elementi oluştur)
+                QRCode.toDataURL(qrUrl, {
+                    width: 200,
+                    margin: 2,
+                    color: {
+                        dark: '#000000',
+                        light: '#FFFFFF'
+                    },
+                    errorCorrectionLevel: 'M'
+                }, function (error, url) {
+                    if (error) {
+                        console.error('QR kod oluşturma hatası:', error);
+                        qrContainer.innerHTML = '<p style="color: red; padding: 10px;">QR kod oluşturulamadı: ' + (error.message || error) + '<br><small>Lütfen konsolu kontrol edin (F12)</small></p>';
+                    } else {
+                        // QR kod img elementi oluştur
+                        const qrImg = document.createElement('img');
+                        qrImg.src = url;
+                        qrImg.alt = 'QR Kod';
+                        qrImg.style.cssText = 'max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 4px; display: block; margin: 0 auto;';
+                        
+                        // URL bilgisi ve test linki ekle
+                        const urlInfo = document.createElement('div');
+                        urlInfo.style.cssText = 'margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px; font-size: 0.85em;';
+                        
+                        // URL'nin localhost içerip içermediğini kontrol et
+                        const isLocalhost = qrUrl.includes('localhost') || qrUrl.includes('127.0.0.1');
+                        const warningHtml = isLocalhost ? 
+                            '<div style="background: #fff3cd; color: #856404; padding: 10px; border-radius: 6px; margin-bottom: 10px; font-size: 0.9em;">⚠️ <strong>UYARI:</strong> Bu URL mobil cihazlarda çalışmaz!<br>Telefonunuzdan IP adresi ile siteyi açıp QR kod oluşturun.</div>' : 
+                            '<div style="background: #d4edda; color: #155724; padding: 10px; border-radius: 6px; margin-bottom: 10px; font-size: 0.9em;">✅ Bu URL mobil cihazlarda çalışır!</div>';
+                        
+                        urlInfo.innerHTML = `
+                            ${warningHtml}
+                            <div style="margin-bottom: 8px; color: #666; font-weight: 600;">QR Kod İçindeki URL:</div>
+                            <div style="word-break: break-all; color: #333; margin-bottom: 10px; font-family: monospace; font-size: 0.9em; background: white; padding: 8px; border-radius: 4px; border: 1px solid #ddd;">${qrUrl}</div>
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                <a href="${qrUrl}" target="_blank" style="display: inline-block; padding: 8px 16px; background: #3b82f6; color: white; text-decoration: none; border-radius: 6px; font-size: 0.9em; margin-top: 5px;">🔗 URL'yi Test Et</a>
+                                <button onclick="navigator.clipboard.writeText('${qrUrl}').then(() => alert('URL kopyalandı!')).catch(() => alert('Kopyalama başarısız'))" style="padding: 8px 16px; background: #6c757d; color: white; border: none; border-radius: 6px; font-size: 0.9em; margin-top: 5px; cursor: pointer;">📋 URL'yi Kopyala</button>
+                            </div>
+                        `;
+                        
+                        qrContainer.innerHTML = '';
+                        qrContainer.appendChild(qrImg);
+                        qrContainer.appendChild(urlInfo);
+                        
+                        // Yazdır butonunu göster
+                        const printBtn = document.getElementById('printBtn');
+                        if (printBtn) {
+                            printBtn.style.display = 'block';
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('QR kod oluşturma genel hatası:', error);
+                const qrContainer = document.getElementById('qrcode');
+                if (qrContainer) {
+                    qrContainer.innerHTML = '<p style="color: red; padding: 10px;">QR kod oluşturulamadı: ' + error.message + '<br><small>Lütfen konsolu kontrol edin (F12)</small></p>';
+                }
+            }
+        }
+        
+        // QR kod yazdırma fonksiyonu
+        function printQRCode(bookId, bookTitle, demirbas) {
+            const printContainer = document.getElementById('printQrcode');
+            if (!printContainer) {
+                console.error('Yazdırma container bulunamadı');
+                return;
+            }
+            printContainer.innerHTML = '<p>QR kod oluşturuluyor...</p>';
+            
+            // QR kod içine tam URL koy (mobil uyumlu)
+            let qrUrl;
+            const currentHost = window.location.hostname;
+            
+            // URL'yi belirle
+            if (window.location.protocol === 'file:') {
+                alert('⚠️ ÖNEMLİ: QR kodun çalışması için web sunucusu kullanmanız gerekiyor!\n\nLütfen BASLAT.bat dosyasını çalıştırarak sunucuyu başlatın.');
+                qrUrl = `index.html?book=${bookId}`;
+                createPrintQRCode(qrUrl, printContainer, bookTitle, demirbas);
+            } else if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+                // localhost kullanılıyorsa - IP adresini al
+                fetch('/get-ip')
+                    .then(response => response.text())
+                    .then(ip => {
+                        if (ip && ip !== 'BULUNAMADI' && ip.trim() !== '') {
+                            qrUrl = `http://${ip.trim()}:8000/index.html?book=${bookId}`;
+                            console.log('Yazdırma QR kod URL (IP ile):', qrUrl);
+                        } else {
+                            qrUrl = `http://localhost:8000/index.html?book=${bookId}`;
+                            console.log('Yazdırma QR kod URL (localhost - mobilde çalışmaz):', qrUrl);
+                        }
+                        createPrintQRCode(qrUrl, printContainer, bookTitle, demirbas);
+                    })
+                    .catch(error => {
+                        console.warn('IP adresi alınamadı:', error);
+                        qrUrl = `http://localhost:8000/index.html?book=${bookId}`;
+                        createPrintQRCode(qrUrl, printContainer, bookTitle, demirbas);
+                    });
+                return;
+            } else {
+                // IP adresi veya domain zaten kullanılıyor
+                const baseUrl = window.location.origin + window.location.pathname.replace(/[^/]*$/, '');
+                qrUrl = `${baseUrl}index.html?book=${bookId}`;
+                console.log('Yazdırma QR kod URL (tam URL):', qrUrl);
+                createPrintQRCode(qrUrl, printContainer, bookTitle, demirbas);
+            }
+        }
+        
+        // Yazdırma için QR kod oluşturma yardımcı fonksiyonu
+        function createPrintQRCode(qrUrl, printContainer, bookTitle, demirbas) {
+            // QR kod kütüphanesinin yüklendiğini kontrol et
+            if (typeof QRCode === 'undefined' || window.useQRCodeAPI) {
+                console.log('QR kod kütüphanesi yüklenmemiş, alternatif API kullanılıyor');
+                createPrintQRCodeWithAPI(qrUrl, printContainer, bookTitle, demirbas);
+                return;
+            }
+            
+            try {
+                // Yazdırma için QR kod oluştur (toDataURL ile) - Daha büyük ve net
+                QRCode.toDataURL(qrUrl, {
+                    width: 400,
+                    margin: 3,
+                    color: {
+                        dark: '#000000',
+                        light: '#FFFFFF'
+                    },
+                    errorCorrectionLevel: 'H' // Yüksek hata düzeltme - yazdırma için daha iyi
+                }, function (error, url) {
+                    if (error) {
+                        console.error('QR kod oluşturma hatası:', error);
+                        // Hata durumunda alternatif API'yi dene
+                        createPrintQRCodeWithAPI(qrUrl, printContainer, bookTitle, demirbas);
+                    } else {
+                        // QR kod img elementi oluştur
+                        printContainer.innerHTML = '<img src="' + url + '" alt="QR Kod" style="max-width: 100%; height: auto;">';
+                        
+                        // Yazdırma sayfası bilgilerini doldur ve yazdır
+                        showPrintPage(bookTitle, demirbas);
+                    }
+                });
+            } catch (error) {
+                console.error('QR kod yazdırma hatası:', error);
+                // Hata durumunda alternatif API'yi dene
+                createPrintQRCodeWithAPI(qrUrl, printContainer, bookTitle, demirbas);
+            }
+        }
+        
+        // Alternatif API ile yazdırma için QR kod oluşturma
+        function createPrintQRCodeWithAPI(qrUrl, printContainer, bookTitle, demirbas) {
+            const apis = [
+                `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(qrUrl)}`,
+                `https://chart.googleapis.com/chart?chs=400x400&cht=qr&chl=${encodeURIComponent(qrUrl)}`
+            ];
+            
+            let imgIndex = 0;
+            const img = document.createElement('img');
+            img.style.cssText = 'max-width: 100%; height: auto;';
+            img.alt = 'QR Kod';
+            
+            img.onerror = function() {
+                imgIndex++;
+                if (imgIndex < apis.length) {
+                    img.src = apis[imgIndex];
+                } else {
+                    printContainer.innerHTML = '<p style="color: red; padding: 15px;">QR kod oluşturulamadı. İnternet bağlantınızı kontrol edin.</p>';
+                }
+            };
+            
+            img.onload = function() {
+                printContainer.innerHTML = '';
+                printContainer.appendChild(img);
+                showPrintPage(bookTitle, demirbas);
+            };
+            
+            img.src = apis[0];
+        }
+        
+        // Yazdırma sayfasını göster ve yazdır
+        function showPrintPage(bookTitle, demirbas) {
+            // Yazdırma sayfası bilgilerini doldur
+            const printBookTitle = document.getElementById('printBookTitle');
+            const printDemirbas = document.getElementById('printDemirbas');
+            if (printBookTitle) printBookTitle.textContent = bookTitle;
+            if (printDemirbas) printDemirbas.textContent = demirbas;
+            
+            // Yazdırma sayfasını göster ve yazdır
+            const printPage = document.getElementById('qrPrintPage');
+            if (printPage) {
+                printPage.style.display = 'block';
+                
+                // Kısa bir gecikme ile yazdır (QR kodun yüklenmesi için)
+                setTimeout(() => {
+                    window.print();
+                    
+                    // Yazdırma sonrası gizle
+                    setTimeout(() => {
+                        printPage.style.display = 'none';
+                    }, 100);
+                }, 300);
+            }
+        }
+        
+        if (bookId && kitaplar[bookId]) {
+            displayBook(kitaplar[bookId]);
+            document.title = `${kitaplar[bookId].baslik} - Kütüphane QR Kod Sistemi`;
+            
+            // Sayfa yüklendiğinde otomatik QR kod oluştur
+            // QR kod kütüphanesinin yüklenmesini bekle
+            function waitForQRCode() {
+                if (typeof QRCode !== 'undefined') {
+                    setTimeout(() => {
+                        generateQRCode(bookId);
+                    }, 300);
+                } else {
+                    // Kütüphane henüz yüklenmemiş, tekrar dene
+                    setTimeout(waitForQRCode, 100);
+                }
+            }
+            
+            // Maksimum 5 saniye bekle, sonra API kullan
+            let attempts = 0;
+            const maxAttempts = 50;
+            function waitForQRCodeWithTimeout() {
+                if (typeof QRCode !== 'undefined' && !window.useQRCodeAPI) {
+                    setTimeout(() => {
+                        generateQRCode(bookId);
+                    }, 300);
+                } else if (attempts < maxAttempts) {
+                    attempts++;
+                    setTimeout(waitForQRCodeWithTimeout, 100);
+                } else {
+                    // Kütüphane yüklenemedi, API kullan
+                    console.log('QR kod kütüphanesi yüklenemedi, API kullanılıyor');
+                    generateQRCode(bookId); // Bu otomatik olarak API kullanacak
+                }
+            }
+            waitForQRCodeWithTimeout();
+        } else {
+            document.getElementById('bookContent').style.display = 'none';
+            document.getElementById('notFound').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
+image.png

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Etiketleri -->
+    <title>İletişim - Kütüphane QR Kod Sistemi</title>
+    <meta name="description" content="Kütüphane QR Kod Sistemi ile iletişime geçin. Sorularınız ve önerileriniz için bize ulaşın.">
+    
+    <!-- CSS Dosyası -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <style>
+        .contact-form {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            margin-top: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #1e293b;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+        
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .contact-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .contact-card-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+        
+        .contact-card h3 {
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+        
+        .contact-card p {
+            color: #64748b;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <!-- Particle Background -->
+    <div class="particle-background">
+        <canvas id="particleCanvas"></canvas>
+    </div>
+    
+    <!-- Header -->
+    <header class="site-header">
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">📚</span>
+                <span>QR Kütüphane</span>
+            </a>
+            <button class="menu-toggle" aria-label="Menü">☰</button>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="kitaplar.html">Kitaplar</a></li>
+                    <li><a href="hakkinda.html">Hakkında</a></li>
+                    <li><a href="sss.html">SSS</a></li>
+                    <li><a href="iletisim.html" class="active">İletişim</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <!-- Ana İçerik -->
+    <main class="main-content">
+        <section class="content-section">
+            <h1>İletişim</h1>
+            <p style="font-size: 1.1em; line-height: 1.8; color: #64748b; margin-bottom: 30px;">
+                Sorularınız, önerileriniz veya destek talepleriniz için bizimle iletişime geçebilirsiniz. Aşağıdaki iletişim formunu doldurarak veya doğrudan iletişim bilgilerimizi kullanarak bize ulaşabilirsiniz.
+            </p>
+            
+            <!-- İletişim Formu -->
+            <div class="contact-form">
+                <h2 style="margin-bottom: 25px; color: #1e293b;">İletişim Formu</h2>
+                <form id="contactForm" onsubmit="handleSubmit(event)">
+                    <div class="form-group">
+                        <label for="name">Ad Soyad *</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">E-posta *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject">Konu *</label>
+                        <input type="text" id="subject" name="subject" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Mesaj *</label>
+                        <textarea id="message" name="message" required></textarea>
+                    </div>
+                    <button type="submit" class="btn">Gönder</button>
+                </form>
+            </div>
+            
+            <!-- İletişim Bilgileri -->
+            <div class="contact-info">
+                <div class="contact-card">
+                    <div class="contact-card-icon">📧</div>
+                    <h3>E-posta</h3>
+                    <p>kutuphane@ornek.edu.tr</p>
+                    <p style="margin-top: 10px; font-size: 0.9em; color: #94a3b8;">E-posta göndermek için yukarıdaki formu kullanabilirsiniz.</p>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-card-icon">📞</div>
+                    <h3>Telefon</h3>
+                    <p>(0212) 123 45 67</p>
+                    <p style="margin-top: 10px; font-size: 0.9em; color: #94a3b8;">Çalışma saatleri: Pazartesi - Cuma, 09:00 - 17:00</p>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-card-icon">📍</div>
+                    <h3>Adres</h3>
+                    <p>Kütüphane Binası<br>Üniversite Kampüsü<br>İstanbul, Türkiye</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Hakkında</h3>
+                <p>Kütüphane QR Kod Sistemi, kütüphanelerin dijital dönüşümüne katkı sağlayan modern bir platformdur.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Hızlı Bağlantılar</h3>
+                <ul class="footer-links">
+                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="kitaplar.html">Kitaplar</a></li>
+                    <li><a href="hakkinda.html">Hakkında</a></li>
+                    <li><a href="sss.html">Sık Sorulan Sorular</a></li>
+                    <li><a href="iletisim.html">İletişim</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>İletişim</h3>
+                <p>Kütüphane Yönetimi</p>
+                <p>E-posta: kutuphane@ornek.edu.tr</p>
+                <p>Telefon: (0212) 123 45 67</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Kütüphane QR Kod Sistemi. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+    
+    <!-- JavaScript Dosyası -->
+    <script src="js/main.js"></script>
+    <script>
+        function handleSubmit(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const subject = document.getElementById('subject').value;
+            const message = document.getElementById('message').value;
+            
+            // Burada form verilerini sunucuya gönderebilirsiniz
+            // Şimdilik sadece bilgilendirme mesajı gösteriyoruz
+            alert('Mesajınız alındı! Teşekkür ederiz. En kısa sürede size dönüş yapacağız.');
+            
+            // Formu temizle
+            document.getElementById('contactForm').reset();
+        }
+    </script>
+</body>
+</html>
+

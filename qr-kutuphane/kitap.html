@@ -35,37 +35,37 @@
         
         body {
             font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 50%, #cbd5e1 100%);
-            background-size: 200% 200%;
-            animation: gradientShift 15s ease infinite;
-            padding: 20px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 25%, #ec4899 50%, #a855f7 75%, #2563eb 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+            padding: 0;
             min-height: 100vh;
             position: relative;
+            overflow-x: hidden;
         }
         
         @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(255,255,255,0.1) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: 0;
+            0% { 
+                background-position: 0% 50%;
+            }
+            25% { 
+                background-position: 100% 50%;
+            }
+            50% { 
+                background-position: 100% 100%;
+            }
+            75% { 
+                background-position: 0% 100%;
+            }
+            100% { 
+                background-position: 0% 50%;
+            }
         }
         
         .container {
             max-width: 1000px;
             margin: 0 auto;
+            padding: 20px;
             position: relative;
             z-index: 1;
         }
@@ -674,10 +674,37 @@
             }
         }
     </style>
+    <!-- CSS Dosyası -->
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+    <!-- Particle Background -->
+    <div class="particle-background">
+        <canvas id="particleCanvas"></canvas>
+    </div>
+    
+    <!-- Header -->
+    <header class="site-header">
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">📚</span>
+                <span>QR Kütüphane</span>
+            </a>
+            <button class="menu-toggle" aria-label="Menü">☰</button>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="kitaplar.html">Kitaplar</a></li>
+                    <li><a href="hakkinda.html">Hakkında</a></li>
+                    <li><a href="sss.html">SSS</a></li>
+                    <li><a href="iletisim.html">İletişim</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
     <div class="container">
-        <a href="index.html" class="back-btn">← Ana Sayfaya Dön</a>
+        <a href="index.html" class="back-btn" style="margin-top: 20px;">← Ana Sayfaya Dön</a>
         
         <div id="bookContent">
             <!-- Kitap içeriği JavaScript ile doldurulacak -->
@@ -700,6 +727,35 @@
             </div>
     </div>
 </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Hakkında</h3>
+                <p>Kütüphane QR Kod Sistemi, kütüphanelerin dijital dönüşümüne katkı sağlayan modern bir platformdur.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Hızlı Bağlantılar</h3>
+                <ul class="footer-links">
+                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="kitaplar.html">Kitaplar</a></li>
+                    <li><a href="hakkinda.html">Hakkında</a></li>
+                    <li><a href="sss.html">Sık Sorulan Sorular</a></li>
+                    <li><a href="iletisim.html">İletişim</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>İletişim</h3>
+                <p>Kütüphane Yönetimi</p>
+                <p>E-posta: kutuphane@ornek.edu.tr</p>
+                <p>Telefon: (0212) 123 45 67</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Kütüphane QR Kod Sistemi. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
 
 <script>
 const kitaplar = {
@@ -1411,6 +1467,9 @@ const kitaplar = {
             document.getElementById('notFound').style.display = 'block';
         }
     </script>
+    
+    <!-- JavaScript Dosyası -->
+    <script src="js/main.js"></script>
 </body>
 </html>
 image.png

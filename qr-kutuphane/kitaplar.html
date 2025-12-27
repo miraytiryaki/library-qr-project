@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Etiketleri -->
+    <title>Kitaplar - Kütüphane QR Kod Sistemi</title>
+    <meta name="description" content="Kütüphane koleksiyonundaki tüm kitapları görüntüleyin, arayın ve filtreleyin.">
+    <meta name="keywords" content="kitap listesi, kütüphane katalog, kitap arama, kitap filtreleme">
+    
+    <!-- QR Kod Kütüphanesi -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    
+    <!-- CSS Dosyası -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <style>
+        /* Kitap listesi sayfasına özel stiller */
+        .search-filter-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .search-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 15px 20px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            background: #fff;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+        
+        .category-filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 10px 20px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+        
+        .filter-btn:hover {
+            border-color: #3b82f6;
+            color: #3b82f6;
+            transform: translateY(-2px);
+        }
+        
+        .filter-btn.active {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border-color: #3b82f6;
+        }
+        
+        .results-info {
+            color: #64748b;
+            font-size: 0.95em;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+        
+        .no-results-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Particle Background -->
+    <div class="particle-background">
+        <canvas id="particleCanvas"></canvas>
+    </div>
+    
+    <!-- Header -->
+    <header class="site-header">
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">📚</span>
+                <span>QR Kütüphane</span>
+            </a>
+            <button class="menu-toggle" aria-label="Menü">☰</button>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="kitaplar.html" class="active">Kitaplar</a></li>
+                    <li><a href="hakkinda.html">Hakkında</a></li>
+                    <li><a href="sss.html">SSS</a></li>
+                    <li><a href="iletisim.html">İletişim</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <!-- Ana İçerik -->
+    <main class="main-content">
+        <section class="content-section">
+            <h1 style="margin-bottom: 30px;">Kitap Kataloğu</h1>
+            
+            <!-- Arama ve Filtreleme Bölümü -->
+            <div class="search-filter-section">
+                <h2 style="margin-bottom: 20px; font-size: 1.5em;">Arama ve Filtreleme</h2>
+                
+                <div class="search-box">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Kitap adı, yazar veya açıklama ile ara...">
+                    <button class="btn" onclick="performSearch()">🔍 Ara</button>
+                    <button class="btn btn-secondary" onclick="clearSearch()">Temizle</button>
+                </div>
+                
+                <div>
+                    <h3 style="margin-bottom: 15px; font-size: 1.1em; color: #1e293b;">Kategori Filtreleme</h3>
+                    <div class="category-filters" id="categoryFilters">
+                        <button class="filter-btn active" data-category="all" onclick="filterByCategory('all')">Tümü</button>
+                    </div>
+                </div>
+                
+                <div class="results-info" id="resultsInfo"></div>
+            </div>
+            
+            <!-- Kitap Listesi -->
+            <div class="books-grid" id="booksGrid"></div>
+            
+            <!-- Sonuç Bulunamadı -->
+            <div id="noResults" class="no-results" style="display: none;">
+                <div class="no-results-icon">📖</div>
+                <h3>Aradığınız kriterlere uygun kitap bulunamadı.</h3>
+                <p>Lütfen farklı bir arama terimi veya kategori deneyin.</p>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Hakkında</h3>
+                <p>Kütüphane QR Kod Sistemi, kütüphanelerin dijital dönüşümüne katkı sağlayan modern bir platformdur.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Hızlı Bağlantılar</h3>
+                <ul class="footer-links">
+                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="kitaplar.html">Kitaplar</a></li>
+                    <li><a href="hakkinda.html">Hakkında</a></li>
+                    <li><a href="sss.html">Sık Sorulan Sorular</a></li>
+                    <li><a href="iletisim.html">İletişim</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>İletişim</h3>
+                <p>Kütüphane Yönetimi</p>
+                <p>E-posta: kutuphane@ornek.edu.tr</p>
+                <p>Telefon: (0212) 123 45 67</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Kütüphane QR Kod Sistemi. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+    
+    <!-- QR Kod Modal -->
+    <div id="qrModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modalBookTitle"></h2>
+            <div id="modalQrcode"></div>
+            <button class="btn" onclick="printQRCodeFromModal()" style="margin-top: 25px;">Yazdır</button>
+            <p style="margin-top: 15px; color: #666; font-size: 0.9em;">QR kodu yazdırarak kitabın üzerine yapıştırabilirsiniz.</p>
+        </div>
+    </div>
+    
+    <!-- Yazdırma için gizli sayfa -->
+    <div class="qr-print-page" id="qrPrintPage">
+        <h2>Kütüphane QR Kod Etiketi</h2>
+        <div id="printQrcode"></div>
+        <div class="book-info">
+            <p><strong id="printBookTitle"></strong></p>
+            <p>Demirbaş No: <strong id="printDemirbas"></strong></p>
+            <p style="margin-top: 20px; font-size: 0.85em; color: #999;">QR kodu okutarak kitap bilgilerine erişebilirsiniz.</p>
+        </div>
+    </div>
+    
+    <!-- JavaScript Dosyası -->
+    <script src="js/main.js"></script>
+    <script>
+        // Kitap listesi sayfasına özel JavaScript
+        let allBooks = [];
+        let filteredBooks = [];
+        let currentCategory = 'all';
+        let currentSearchTerm = '';
+        
+        // Sayfa yüklendiğinde kitapları göster
+        document.addEventListener('DOMContentLoaded', function() {
+            // Kitapları array'e çevir
+            allBooks = Object.values(kitaplar);
+            filteredBooks = [...allBooks];
+            
+            // Kategorileri oluştur
+            setupCategories();
+            
+            // Tüm kitapları göster
+            displayBooks(filteredBooks);
+            
+            // Arama input'una Enter tuşu desteği
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        performSearch();
+                    }
+                });
+                
+                // Gerçek zamanlı arama (opsiyonel)
+                searchInput.addEventListener('input', function() {
+                    if (this.value.length > 2 || this.value.length === 0) {
+                        performSearch();
+                    }
+                });
+            }
+        });
+        
+        // Kategorileri oluştur
+        function setupCategories() {
+            const categories = {};
+            allBooks.forEach(kitap => {
+                if (!categories[kitap.altTur]) {
+                    categories[kitap.altTur] = true;
+                }
+            });
+            
+            const filtersContainer = document.getElementById('categoryFilters');
+            if (!filtersContainer) return;
+            
+            Object.keys(categories).sort().forEach(kategori => {
+                const btn = document.createElement('button');
+                btn.className = 'filter-btn';
+                btn.textContent = kategori;
+                btn.setAttribute('data-category', kategori);
+                btn.onclick = () => filterByCategory(kategori);
+                filtersContainer.appendChild(btn);
+            });
+        }
+        
+        // Kategoriye göre filtrele
+        function filterByCategory(category) {
+            currentCategory = category;
+            
+            // Aktif butonu güncelle
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-category') === category) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Filtreleme yap
+            applyFilters();
+        }
+        
+        // Arama yap
+        function performSearch() {
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                currentSearchTerm = searchInput.value.trim().toLowerCase();
+            }
+            applyFilters();
+        }
+        
+        // Arama temizle
+        function clearSearch() {
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.value = '';
+            }
+            currentSearchTerm = '';
+            filterByCategory('all');
+        }
+        
+        // Filtreleri uygula
+        function applyFilters() {
+            filteredBooks = allBooks.filter(kitap => {
+                // Kategori filtresi
+                if (currentCategory !== 'all' && kitap.altTur !== currentCategory) {
+                    return false;
+                }
+                
+                // Arama filtresi
+                if (currentSearchTerm) {
+                    const searchIn = `${kitap.baslik} ${kitap.yazar} ${kitap.altTur || ''}`.toLowerCase();
+                    if (!searchIn.includes(currentSearchTerm)) {
+                        return false;
+                    }
+                }
+                
+                return true;
+            });
+            
+            displayBooks(filteredBooks);
+            updateResultsInfo();
+        }
+        
+        // Kitapları göster
+        function displayBooks(books) {
+            const grid = document.getElementById('booksGrid');
+            const noResults = document.getElementById('noResults');
+            
+            if (!grid) return;
+            
+            if (books.length === 0) {
+                grid.style.display = 'none';
+                if (noResults) noResults.style.display = 'block';
+                return;
+            }
+            
+            grid.style.display = 'grid';
+            if (noResults) noResults.style.display = 'none';
+            
+            grid.innerHTML = '';
+            
+            books.forEach(kitap => {
+                const card = document.createElement('div');
+                card.className = 'book-card';
+                card.onclick = () => window.location.href = `kitap.html?id=${kitap.id}`;
+                
+                let resimHTML;
+                if (kitap.resim) {
+                    resimHTML = `<img src="${kitap.resim}" alt="${kitap.baslik}" class="book-card-image" loading="lazy" onerror="this.onerror=null; this.style.display='none'; const fallback = this.nextElementSibling; if(fallback) fallback.style.display='flex';">
+                                 <div class="book-card-image" style="background: linear-gradient(135deg, #93c5fd 0%, #60a5fa 100%); display: none; align-items: center; justify-content: center; color: #3b82f6; font-size: 3em;">📚</div>`;
+                } else {
+                    resimHTML = `<div class="book-card-image" style="background: linear-gradient(135deg, #93c5fd 0%, #60a5fa 100%); display: flex; align-items: center; justify-content: center; color: #3b82f6; font-size: 3em;">📚</div>`;
+                }
+                
+                card.innerHTML = `
+                    ${resimHTML}
+                    <h3>${kitap.baslik}</h3>
+                    <div class="author">${kitap.yazar}</div>
+                    <div class="category">${kitap.altTur}</div>
+                    <div class="info-box" style="margin-top: 15px;">
+                        <p><strong>Demirbaş:</strong> ${kitap.demirbas}</p>
+                        <p><strong>Durum:</strong> ${kitap.durum}</p>
+                    </div>
+                    <button class="qr-btn" onclick="event.stopPropagation(); showQRCode('${kitap.id}', '${kitap.baslik}', '${kitap.demirbas}')">QR Kod Oluştur & Yazdır</button>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+        
+        // Sonuç bilgisini güncelle
+        function updateResultsInfo() {
+            const info = document.getElementById('resultsInfo');
+            if (!info) return;
+            
+            const total = allBooks.length;
+            const filtered = filteredBooks.length;
+            
+            if (currentCategory === 'all' && !currentSearchTerm) {
+                info.textContent = `Toplam ${total} kitap listeleniyor.`;
+            } else {
+                info.textContent = `${filtered} kitap bulundu (${total} kitap arasından).`;
+            }
+        }
+    </script>
+</body>
+</html>
+

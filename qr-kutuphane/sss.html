@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Etiketleri -->
+    <title>Sık Sorulan Sorular - Kütüphane QR Kod Sistemi</title>
+    <meta name="description" content="Kütüphane QR Kod Sistemi hakkında sık sorulan sorular ve cevapları.">
+    
+    <!-- CSS Dosyası -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <style>
+        .faq-item {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .faq-item:hover {
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .faq-question {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .faq-question-icon {
+            font-size: 1.2em;
+            color: #3b82f6;
+        }
+        
+        .faq-answer {
+            color: #64748b;
+            line-height: 1.8;
+            font-size: 1.05em;
+        }
+        
+        .faq-category {
+            margin-top: 50px;
+            margin-bottom: 30px;
+        }
+        
+        .faq-category h2 {
+            color: #1e293b;
+            font-size: 1.8em;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Particle Background -->
+    <div class="particle-background">
+        <canvas id="particleCanvas"></canvas>
+    </div>
+    
+    <!-- Header -->
+    <header class="site-header">
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">📚</span>
+                <span>QR Kütüphane</span>
+            </a>
+            <button class="menu-toggle" aria-label="Menü">☰</button>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="kitaplar.html">Kitaplar</a></li>
+                    <li><a href="hakkinda.html">Hakkında</a></li>
+                    <li><a href="sss.html" class="active">SSS</a></li>
+                    <li><a href="iletisim.html">İletişim</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <!-- Ana İçerik -->
+    <main class="main-content">
+        <section class="content-section">
+            <h1>Sık Sorulan Sorular</h1>
+            <p style="font-size: 1.1em; line-height: 1.8; color: #64748b; margin-bottom: 40px;">
+                Kütüphane QR Kod Sistemi hakkında merak ettiğiniz soruların cevaplarını aşağıda bulabilirsiniz. Başka sorularınız için lütfen iletişim sayfamızı ziyaret edin.
+            </p>
+            
+            <!-- Genel Sorular -->
+            <div class="faq-category">
+                <h2>Genel Sorular</h2>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span class="faq-question-icon">❓</span>
+                        <span>QR Kod Sistemi nedir ve nasıl çalışır?</span>
+                    </div>
+                    <div class="faq-answer">
+                        QR Kod Sistemi, her kitaba özel bir QR kod oluşturarak, kullanıcıların akıllı telefonları ile bu kodu okutarak kitap bilgilerine hızlıca erişmesini sağlar. QR kod, kitabın dijital bilgilerine yönlendiren bir bağlantı içerir.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span class="faq-question-icon">❓</span>
+                        <span>Bu sistemi kimler kullanabilir?</span>
+                    </div>
+                    <div class="faq-answer">
+                        Sistem, kütüphane kullanıcıları ve kütüphane personeli tarafından kullanılabilir. Kullanıcılar kitap bilgilerine erişirken, personel kitap kataloglama ve yönetim işlemlerini gerçekleştirebilir.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span class="faq-question-icon">❓</span>
+                        <span>Sistem ücretsiz mi?</span>
+                    </div>
+                    <div class="faq-answer">
+                        Evet, bu sistem açık kaynak kodlu olarak geliştirilmiştir ve kütüphaneler tarafından ücretsiz olarak kullanılabilir.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Kullanım Soruları -->
+            <div class="faq-category">
+                <h2>Kullanım Hakkında</h2>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span class="faq-question-icon">❓</span>
+                        <span>QR kodu nasıl okuturum?</span>
+                    </div>
+                    <div class="faq-answer">
+                        Akıllı telefonunuzun kamera uygulamasını açın ve QR kodu kameraya gösterin. Telefonunuz otomatik olarak QR kodu algılayacak ve kitap bilgilerine yönlendirecektir. Alternatif olarak, bir QR kod okuyucu uygulaması da kullanabilirsiniz.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span class="faq-question-icon">❓</span>
+                        <span>QR kod yazdırma işlemi nasıl yapılır?</span>
+                    </div>
+                    <div class="faq-answer">
+                        Kitap detay sayfasından "QR Kod Oluştur & Yazdır" butonuna tıklayın. Oluşturulan QR kodu yazdırma sayfasında görüntülenir. Yazdır butonuna tıklayarak QR kodu yazdırabilir ve kitabın üzerine yapıştırabilirsiniz.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span class="faq-question-icon">❓</span>
+                        <span>Kitap arama nasıl yapılır?</span>
+                    </div>
+                    <div class="faq-answer">
+                        Ana sayfadaki arama kutusuna kitap adını yazarak veya kitaplar sayfasından gelişmiş arama ve filtreleme özelliklerini kullanarak istediğiniz kitabı bulabilirsiniz. Arama, kitap adı, yazar ve kategoriye göre yapılabilir.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Teknik Sorular -->
+            <div class="faq-category">
+                <h2>Teknik Sorular</h2>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span class="faq-question-icon">❓</span>
+                        <span>Hangi cihazlarda çalışır?</span>
+                    </div>
+                    <div class="faq-answer">
+                        Sistem, tüm modern web tarayıcılarında çalışır. Masaüstü bilgisayarlar, tabletler ve akıllı telefonlarda sorunsuz kullanılabilir. Responsive tasarım sayesinde her ekran boyutuna uyum sağlar.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span class="faq-question-icon">❓</span>
+                        <span>İnternet bağlantısı gerekli mi?</span>
+                    </div>
+                    <div class="faq-answer">
+                        Evet, sistem web tabanlı olduğu için kullanım sırasında internet bağlantısı gereklidir. Ancak, QR kodlar oluşturulduktan sonra yazdırılabilir ve offline olarak da kullanılabilir.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span class="faq-question-icon">❓</span>
+                        <span>Verilerim güvende mi?</span>
+                    </div>
+                    <div class="faq-answer">
+                        Sistem, kitap bilgilerini güvenli bir şekilde saklar. Kişisel veri toplama yapılmaz ve sadece kitap katalog bilgileri sistemde tutulur. Tüm veriler yerel sunucuda saklanır.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Destek -->
+            <div class="faq-category">
+                <h2>Destek ve Yardım</h2>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span class="faq-question-icon">❓</span>
+                        <span>Yardıma ihtiyacım var, nereye başvurabilirim?</span>
+                    </div>
+                    <div class="faq-answer">
+                        Sorularınız veya teknik destek ihtiyacınız için iletişim sayfamızdaki formu doldurabilir veya doğrudan kütüphane yönetimi ile iletişime geçebilirsiniz. E-posta: kutuphane@ornek.edu.tr, Telefon: (0212) 123 45 67
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Hakkında</h3>
+                <p>Kütüphane QR Kod Sistemi, kütüphanelerin dijital dönüşümüne katkı sağlayan modern bir platformdur.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Hızlı Bağlantılar</h3>
+                <ul class="footer-links">
+                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="kitaplar.html">Kitaplar</a></li>
+                    <li><a href="hakkinda.html">Hakkında</a></li>
+                    <li><a href="sss.html">Sık Sorulan Sorular</a></li>
+                    <li><a href="iletisim.html">İletişim</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>İletişim</h3>
+                <p>Kütüphane Yönetimi</p>
+                <p>E-posta: kutuphane@ornek.edu.tr</p>
+                <p>Telefon: (0212) 123 45 67</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Kütüphane QR Kod Sistemi. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+    
+    <!-- JavaScript Dosyası -->
+    <script src="js/main.js"></script>
+</body>
+</html>
+
